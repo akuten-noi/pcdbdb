@@ -45,5 +45,5 @@
     ])
   }
   function validate(value){const builds=toPlain(value);const errors=[];builds.forEach((b,i)=>{const nums=POINTS.map(([k])=>Number(b[k])||0);if(nums.some(n=>n<0||n>32))errors.push(`育成論${i+1}: 各能力ポイントは0〜32です。`);if(nums.reduce((a,c)=>a+c,0)>66)errors.push(`育成論${i+1}: 能力ポイント合計は66以下です。`);if(!b.pokemon)errors.push(`育成論${i+1}: ポケモンを選択してください。`);const p=DATA.find(x=>x.name===b.pokemon);if(p){['move1','move2','move3','move4'].forEach(k=>{if(b[k]&&!p.moves.some(m=>m.name===b[k]))errors.push(`育成論${i+1}: ${b[k]}は${b.pokemon}の技一覧にありません。`)})}});return errors.length?errors.join('\n'):true}
-  CMS.registerWidget('pokemon-build-list',Control,null,null,{validator:validate});
+  CMS.registerWidget('pokemon-build-list', Control);
 })();
