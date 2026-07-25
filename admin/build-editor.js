@@ -17,6 +17,9 @@
   function field(title,child,hint){return h('label',{style:{display:'block',fontWeight:'700',marginBottom:'12px'}},[h('span',{style:{display:'block',marginBottom:'6px'}},title),child,hint?h('small',{style:{display:'block',fontWeight:'400',color:'#667085',marginTop:'4px'}},hint):null])}
   function allowedItems(p){if(!p)return[];if(p.isMega)return p.megaStone?[p.megaStone]:[];return NORMAL_ITEMS.concat(p.megaStones||[])}
   function Control(props){
+    const React=window.React;
+    const [searchText,setSearchText]=React.useState('');
+    const [openKey,setOpenKey]=React.useState(null);
     const builds=plain(props.value);
     const emit=next=>props.onChange(next);
     const normalized=()=>builds.map(x=>Object.assign({},EMPTY,x));
@@ -44,11 +47,7 @@
           },DATA.map(x=>x.name),'一覧から選択')
         : h('div',{style:{padding:'10px',border:'1px solid #b9c1c8',borderRadius:'6px',background:'#f2f4f7',fontWeight:'700'}},b.pokemon);
 
-      return h('section',{key:b.editorId||`${b.pokemon}-${i}`,style:{border:isNew?'2px solid #1570ef':'1px solid #d0d5dd',borderRadius:'10px',padding:'16px',marginBottom:'18px',background:'#fff'}},[
-        h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'10px',marginBottom:'14px'}},[
-          h('strong',{},isNew?'新しい育成論を作成':`育成論 ${i+1}｜${b.pokemon}`),
-          h('button',{type:'button',onClick:()=>remove(i),style:{border:0,background:'#b42318',color:'#fff',padding:'7px 12px',borderRadius:'6px',flexShrink:0}},isNew?'作成を取り消す':'削除')
-        ]),
+      const form=[
         isNew
           ? h('div',{style:{padding:'10px 12px',marginBottom:'14px',background:'#eff8ff',borderRadius:'7px',color:'#175cd3',fontSize:'13px'}},'ここでポケモンを選ぶと、新しい育成論として既存一覧に追加されます。')
           : h('div',{style:{padding:'10px 12px',marginBottom:'14px',background:'#fffaeb',borderRadius:'7px',color:'#93370d',fontSize:'13px'}},'既存の育成論を編集中です。別のポケモンを追加する場合は、上の「＋ 新しく育成論を作成」を使用してください。'),
@@ -62,12 +61,43 @@
         h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:'10px',marginBottom:'16px'}},POINTS.map(([k,n])=>{const other=total-(Number(b[k])||0);const max=Math.max(0,Math.min(32,66-other));return field(n,numberInput(b[k],v=>update(i,k,v),max),`0〜32（現在の上限 ${max}）`)})),
         [1,2,3,4].map(n=>{const k='move'+n;const moves=p?p.moves:[];const chosen=moves.find(m=>m.name===b[k]);return h('div',{style:{marginBottom:'12px'}},[field(`技${n}`,select(b[k],v=>update(i,k,v),moves.map(m=>({value:m.name,label:`${m.name}（${m.type}）`})),p?'技を選択':'先にポケモンを選択',!p)),chosen?h('div',{style:{marginTop:'-7px'}},badge(chosen.type,chosen.type)):null])}),
         TEXTS.map(([k,n])=>field(n,h('textarea',{value:b[k]||'',onChange:e=>update(i,k,e.target.value),rows:4,style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}})))
+      ];
+
+      if(isNew){
+        return h('section',{key:b.editorId||`new-${i}`,style:{border:'2px solid #1570ef',borderRadius:'10px',padding:'16px',marginBottom:'18px',background:'#fff'}},[
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'10px',marginBottom:'14px'}},[
+            h('strong',{},'新しい育成論を作成'),
+            h('button',{type:'button',onClick:()=>remove(i),style:{border:0,background:'#b42318',color:'#fff',padding:'7px 12px',borderRadius:'6px',flexShrink:0}},'作成を取り消す')
+          ]),
+          form
+        ]);
+      }
+
+      const key=b.editorId||`${b.pokemon}-${i}`;
+      const isOpen=openKey===key;
+      return h('section',{key,style:{border:isOpen?'2px solid #1570ef':'1px solid #d0d5dd',borderRadius:'9px',marginBottom:'8px',background:'#fff',overflow:'hidden'}},[
+        h('button',{type:'button',onClick:()=>setOpenKey(isOpen?null:key),style:{width:'100%',border:0,background:isOpen?'#eff8ff':'#fff',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',textAlign:'left',cursor:'pointer'}},[
+          h('span',{style:{display:'flex',alignItems:'center',gap:'9px',minWidth:0}},[
+            h('span',{style:{fontSize:'16px',color:'#475467',width:'18px'}},isOpen?'▼':'▶'),
+            h('strong',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},b.pokemon),
+            b.published===false?h('span',{style:{fontSize:'11px',background:'#f2f4f7',color:'#667085',padding:'2px 7px',borderRadius:'999px'}},'非公開'):null
+          ]),
+          h('span',{style:{fontSize:'13px',color:'#175cd3',fontWeight:'700',flexShrink:0}},isOpen?'閉じる':'編集する')
+        ]),
+        isOpen?h('div',{style:{padding:'16px',borderTop:'1px solid #d0d5dd'}},[
+          h('div',{style:{display:'flex',justifyContent:'flex-end',marginBottom:'12px'}},[
+            h('button',{type:'button',onClick:()=>remove(i),style:{border:0,background:'#b42318',color:'#fff',padding:'7px 12px',borderRadius:'6px'}},'この育成論を削除')
+          ]),
+          form
+        ]):null
       ]);
     }
 
     const newEntries=[];
     const existingEntries=[];
     builds.forEach((raw,i)=>(raw&&raw.pokemon?existingEntries:newEntries).push({raw,i}));
+    const query=searchText.trim().toLowerCase();
+    const filteredExisting=query?existingEntries.filter(({raw})=>String(raw.pokemon||'').toLowerCase().includes(query)):existingEntries;
 
     return h('div',{},[
       h('section',{style:{border:'1px solid #84adff',borderRadius:'10px',padding:'16px',marginBottom:'22px',background:'#f5f8ff'}},[
@@ -76,13 +106,16 @@
         h('button',{type:'button',onClick:add,disabled:hasBlank,style:{width:'100%',padding:'12px',border:'1px solid #1570ef',background:hasBlank?'#e4e7ec':'#eff8ff',color:hasBlank?'#667085':'#175cd3',fontWeight:'700',borderRadius:'8px',cursor:hasBlank?'not-allowed':'pointer'}},hasBlank?'新規作成フォームを入力してください':'＋ 新しく育成論を作成')
       ]),
       newEntries.length?h('div',{},newEntries.map(({raw,i})=>renderBuild(raw,i,true))):null,
-      h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',margin:'24px 0 12px'}},[
+      h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',margin:'24px 0 12px',gap:'10px'}},[
         h('h2',{style:{fontSize:'18px',margin:0}},'既に作成したポケモンの育成論一覧'),
-        h('span',{style:{fontSize:'13px',color:'#667085'}},`${existingEntries.length}件`)
+        h('span',{style:{fontSize:'13px',color:'#667085'}},query?`${filteredExisting.length} / ${existingEntries.length}件`:`${existingEntries.length}件`)
       ]),
-      existingEntries.length
-        ? h('div',{},existingEntries.map(({raw,i})=>renderBuild(raw,i,false)))
-        : h('div',{style:{padding:'20px',textAlign:'center',border:'1px dashed #98a2b3',borderRadius:'8px',color:'#667085'}},'作成済みの育成論はありません。')
+      existingEntries.length?h('div',{style:{marginBottom:'12px'}},[
+        h('input',{type:'search',value:searchText,placeholder:'ポケモン名で育成論を検索',onChange:e=>setSearchText(e.target.value),style:{width:'100%',padding:'11px 12px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'8px',fontSize:'14px'}})
+      ]):null,
+      filteredExisting.length
+        ? h('div',{},filteredExisting.map(({raw,i})=>renderBuild(raw,i,false)))
+        : h('div',{style:{padding:'20px',textAlign:'center',border:'1px dashed #98a2b3',borderRadius:'8px',color:'#667085'}},existingEntries.length?'検索条件に一致する育成論はありません。':'作成済みの育成論はありません。')
     ]);
   }
   CMS.registerWidget('pokemon-build-list',Control);
