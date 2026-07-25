@@ -1,1 +1,19 @@
-{"builds":[]}
+{
+  "builds": [
+    {
+      "defense": 32,
+      "move1": "ねこだまし",
+      "move2": "すてゼリフ",
+      "move3": "フレアドライブ",
+      "spDefense": 2,
+      "move4": "まもる",
+      "nature": "しんちょう",
+      "hp": 32,
+      "ability": "いかく",
+      "published": true,
+      "pokemon": "ガオガエン",
+      "item": "オボンのみ",
+      "title": "サポート"
+    }
+  ]
+}
