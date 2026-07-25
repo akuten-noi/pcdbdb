@@ -1,0 +1,50 @@
+# 初回設定：下の repo を自分の「GitHubユーザー名/リポジトリ名」に変更してください。
+backend:
+  name: github
+  repo: akuten-noi/pcdbdb
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+publish_mode: simple
+locale: ja
+
+collections:
+  - name: "build_database"
+    label: "育成論"
+    files:
+      - name: "builds"
+        label: "育成論一覧"
+        file: "data/builds.json"
+        format: "json"
+        fields:
+          - label: "育成論"
+            name: "builds"
+            widget: "list"
+            summary: "{{fields.pokemon}}｜{{fields.title}}"
+            fields:
+              - { label: "公開する", name: "published", widget: "boolean", default: true }
+              - { label: "ポケモン名", name: "pokemon", widget: "string", hint: "サイトに表示される正式なポケモン名を入力" }
+              - { label: "型名", name: "title", widget: "string" }
+              - { label: "役割", name: "role", widget: "string", required: false }
+              - { label: "性格", name: "nature", widget: "string", required: false }
+              - { label: "特性", name: "ability", widget: "string", required: false }
+              - { label: "持ち物", name: "item", widget: "string", required: false }
+              - { label: "HPポイント", name: "hp", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "攻撃ポイント", name: "attack", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "防御ポイント", name: "defense", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "特攻ポイント", name: "spAttack", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "特防ポイント", name: "spDefense", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "素早さポイント", name: "speed", widget: "number", value_type: "int", min: 0, required: false }
+              - { label: "技1", name: "move1", widget: "string", required: false }
+              - { label: "技2", name: "move2", widget: "string", required: false }
+              - { label: "技3", name: "move3", widget: "string", required: false }
+              - { label: "技4", name: "move4", widget: "string", required: false }
+              - { label: "基本的な使い方", name: "usage", widget: "text", required: false }
+              - { label: "相性の良い味方", name: "partners", widget: "text", required: false }
+              - { label: "苦手な相手", name: "counters", widget: "text", required: false }
+              - { label: "選出・立ち回り", name: "gameplan", widget: "text", required: false }
+              - { label: "ダメージ・耐久目安", name: "calcs", widget: "text", required: false }
+              - { label: "補足", name: "notes", widget: "text", required: false }
