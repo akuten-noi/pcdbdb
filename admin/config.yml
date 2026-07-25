@@ -1,0 +1,53 @@
+backend:
+  name: github
+  repo: akuten-noi/pcdbdb
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+publish_mode: simple
+locale: ja
+
+collections:
+  - name: build_database
+    label: 育成論
+    files:
+      - name: builds
+        label: 育成論一覧
+        file: data/builds.json
+        format: json
+        fields:
+          - label: 育成論
+            name: builds
+            widget: pokemon-build-list
+            required: false
+  - name: team_database
+    label: 構築
+    files:
+      - name: teams
+        label: 構築一覧
+        file: data/teams.json
+        format: json
+        fields:
+          - label: 構築
+            name: teams
+            widget: list
+            required: false
+            summary: "{{fields.teamName}}"
+            fields:
+              - { label: 公開する, name: published, widget: boolean, default: true }
+              - { label: 構築名, name: teamName, widget: string }
+              - { label: ポケモン1, name: pokemon1, widget: string }
+              - { label: ポケモン2, name: pokemon2, widget: string }
+              - { label: ポケモン3, name: pokemon3, widget: string }
+              - { label: ポケモン4, name: pokemon4, widget: string }
+              - { label: ポケモン5, name: pokemon5, widget: string }
+              - { label: ポケモン6, name: pokemon6, widget: string }
+              - { label: 構築コンセプト, name: concept, widget: text, required: false }
+              - { label: 基本選出, name: leads, widget: text, required: false }
+              - { label: 動かし方, name: gameplan, widget: text, required: false }
+              - { label: 苦手な相手・注意点, name: counters, widget: text, required: false }
+              - { label: 補足, name: notes, widget: text, required: false }
+
