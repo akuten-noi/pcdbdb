@@ -1,27 +1,3 @@
 {
-  "builds": [
-    {
-      "defense": 0,
-      "move1": "",
-      "usage": "",
-      "move2": "",
-      "notes": "",
-      "move3": "",
-      "spDefense": 0,
-      "move4": "",
-      "spAttack": 0,
-      "speed": 0,
-      "nature": "",
-      "hp": 0,
-      "attack": 0,
-      "ability": "",
-      "partners": "",
-      "published": true,
-      "pokemon": "",
-      "item": "",
-      "counters": "",
-      "gameplan": "",
-      "calcs": ""
-    }
-  ]
+  "builds": []
 }
