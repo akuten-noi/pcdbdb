@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Pokémon Championsダブルバトル専用の日本語対戦データベース">
-<title>ポケモンチャンピオンズ ダブルバトル対戦データベース</title>
+<meta name="description" content="ポケモンチャンピオンズ（ダブルバトル専用）データベース">
+<title>ポケモンチャンピオンズ（ダブルバトル専用）データベース</title>
 <style>
 :root{--bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#667085;--line:#d9dfeb;--accent:#2f67d8;--soft:#eaf1ff}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif}
@@ -555,11 +555,15 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .speed-common-compact{margin-top:8px}
 @media(max-width:600px){.speed-simple-values{grid-template-columns:repeat(2,minmax(0,1fr))}.speed-matrix{min-width:470px}.speed-matrix th,.speed-matrix td{padding:6px 3px}}
 
+
+/* 育成論CMS */
+.site-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.admin-link{display:inline-flex;align-items:center;justify-content:center;padding:7px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;color:#174da8;font-size:.72rem;font-weight:900;text-decoration:none}.admin-link:hover{background:var(--soft)}
+.build-empty{padding:18px;border:1px dashed #bcc8da;border-radius:9px;background:#fff;text-align:center;color:var(--muted);font-size:.76rem}.build-list{display:grid;gap:9px;margin-top:8px}.build-card{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}.build-card>summary{cursor:pointer;list-style:none;padding:10px 12px;background:#f6f9ff;font-weight:900}.build-card>summary::-webkit-details-marker{display:none}.build-card>summary::before{content:"▶";display:inline-block;margin-right:7px;font-size:.65rem;transition:transform .15s}.build-card[open]>summary::before{transform:rotate(90deg)}.build-body{padding:10px 12px;display:grid;gap:9px}.build-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.build-meta-item{border:1px solid #e1e7f0;border-radius:7px;background:#fbfcfe;padding:6px}.build-meta-label{display:block;font-size:.62rem;color:var(--muted);font-weight:800}.build-meta-value{display:block;margin-top:2px;font-size:.76rem;font-weight:900}.build-section{border-top:1px solid #edf0f5;padding-top:8px}.build-section h3{margin:0 0 5px;font-size:.76rem}.build-section p{margin:0;white-space:pre-wrap;color:var(--text);font-size:.74rem;line-height:1.6}.build-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.build-move{border:1px solid #dfe5ee;border-radius:7px;padding:6px 8px;background:#fbfcfe;font-size:.74rem;font-weight:850}.build-points{display:flex;flex-wrap:wrap;gap:5px}.build-point{border-radius:999px;background:#eef4ff;color:#174da8;padding:3px 8px;font-size:.68rem;font-weight:850}@media(max-width:680px){.build-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.build-moves{grid-template-columns:1fr}.admin-link{width:100%}}
 </style>
 </head>
 <body>
 <main class="app">
-<header><h1>ポケモンチャンピオンズ ダブルバトル対戦データベース</h1></header>
+<header class="site-header"><h1>ポケモンチャンピオンズ（ダブルバトル専用）データベース</h1><a class="admin-link" href="admin/" target="_blank" rel="noopener">育成論を編集</a></header>
 <div class="controls"><div class="top-search-wrap"><input id="search" type="search" placeholder="ポケモン名を入力" autocomplete="off"><div id="searchSuggestions" class="search-suggestions" hidden></div></div><button id="listToggle" class="list-toggle" type="button" aria-expanded="false" aria-controls="list">ポケモン一覧を表示</button><button id="damagePageToggle" class="list-toggle damage-page-toggle" type="button">ダメージ計算</button><button id="speedPageToggle" class="list-toggle speed-page-toggle" type="button">素早さ比較</button></div>
 <div id="layout" class="layout"><aside id="list" class="sidebar" hidden></aside><section id="detail" class="detail"></section></div>
 </main>
@@ -2321,6 +2325,20 @@ function bindSpeedControls(){
 }
 
 
+
+let BUILD_GUIDES=[];
+function escapeBuildHtml(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+function buildTextSection(title,value){if(!value)return "";return `<section class="build-section"><h3>${escapeBuildHtml(title)}</h3><p>${escapeBuildHtml(value)}</p></section>`}
+function renderBuildGuides(p){
+  const builds=BUILD_GUIDES.filter(b=>b&&b.pokemon===p.name&&b.published!==false);
+  if(!builds.length)return `<section class="build-guide"><h2>育成論</h2><div class="build-empty">このポケモンの育成論はまだ登録されていません。<br>画面上部の「育成論を編集」から追加できます。</div></section>`;
+  return `<section class="build-guide"><h2>育成論</h2><div class="build-list">${builds.map((b,i)=>{
+    const moves=[b.move1,b.move2,b.move3,b.move4].filter(Boolean);
+    const points=[["HP",b.hp],["攻撃",b.attack],["防御",b.defense],["特攻",b.spAttack],["特防",b.spDefense],["素早さ",b.speed]].filter(x=>x[1]!==undefined&&x[1]!==null&&x[1]!=="");
+    return `<details class="build-card" ${i===0?"open":""}><summary>${escapeBuildHtml(b.title||"基本型")}</summary><div class="build-body"><div class="build-meta"><div class="build-meta-item"><span class="build-meta-label">役割</span><span class="build-meta-value">${escapeBuildHtml(b.role||"―")}</span></div><div class="build-meta-item"><span class="build-meta-label">性格</span><span class="build-meta-value">${escapeBuildHtml(b.nature||"―")}</span></div><div class="build-meta-item"><span class="build-meta-label">特性</span><span class="build-meta-value">${escapeBuildHtml(b.ability||"―")}</span></div><div class="build-meta-item"><span class="build-meta-label">持ち物</span><span class="build-meta-value">${escapeBuildHtml(b.item||"―")}</span></div></div>${points.length?`<section class="build-section"><h3>能力ポイント</h3><div class="build-points">${points.map(([n,v])=>`<span class="build-point">${n} ${escapeBuildHtml(v)}</span>`).join("")}</div></section>`:""}${moves.length?`<section class="build-section"><h3>技構成</h3><div class="build-moves">${moves.map(m=>`<div class="build-move">${escapeBuildHtml(m)}</div>`).join("")}</div></section>`:""}${buildTextSection("基本的な使い方",b.usage)}${buildTextSection("相性の良い味方",b.partners)}${buildTextSection("苦手な相手",b.counters)}${buildTextSection("選出・立ち回り",b.gameplan)}${buildTextSection("ダメージ・耐久目安",b.calcs)}${buildTextSection("補足",b.notes)}</div></details>`
+  }).join("")}</div></section>`
+}
+fetch("data/builds.json",{cache:"no-store"}).then(r=>r.ok?r.json():[]).then(data=>{BUILD_GUIDES=Array.isArray(data)?data:(Array.isArray(data.builds)?data.builds:[]);if(typeof renderDetail==="function")renderDetail()}).catch(()=>{BUILD_GUIDES=[]});
 function renderDetail(){
   const p=POKEMON.find(x=>x.name===selected)||POKEMON[0];if(!p)return;
   if(viewMode==="speed"){
@@ -2355,9 +2373,7 @@ function renderDetail(){
     <div class="move-groups">${sortedMoves.length?moveListHtml(sortedMoves):'<div class="empty">該当する技がありません</div>'}</div></section>
   </div>
   <div class="detail-tab-panel ${activeDetailTab==="builds"?"active":""}" data-panel="builds">
-    <section class="build-guide"><h2>育成論</h2><p>このポケモンの想定型を掲載するためのタブです。今後、役割・能力補正・持ち物・技構成・能力ポイント調整・立ち回りなどを追加できます。</p>
-      <div class="build-placeholder-grid"><div class="build-placeholder"><strong>基本型</strong><span class="help">能力補正、持ち物、技構成、能力ポイント調整</span></div><div class="build-placeholder"><strong>役割・立ち回り</strong><span class="help">選出基準、得意な相手、苦手な相手</span></div></div>
-    </section>
+${renderBuildGuides(p)}
   </div>
   <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。上部タブで基本情報・覚える技・育成論を切り替えられます。</div>`;
   detailEl.querySelectorAll(".detail-tab").forEach(tab=>tab.addEventListener("click",()=>{activeDetailTab=tab.dataset.tab;renderDetail()}));
