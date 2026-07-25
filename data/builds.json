@@ -51,9 +51,9 @@
     {
       "published": true,
       "pokemon": "フシギバナ",
-      "nature": "",
-      "ability": "",
-      "item": "",
+      "nature": "おっとり（特攻1.1倍・防御0.9倍）",
+      "ability": "しんりょく",
+      "item": "あつぞこブーツ",
       "hp": 0,
       "attack": 0,
       "defense": 0,
