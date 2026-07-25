@@ -1,0 +1,25 @@
+backend:
+  name: github
+  repo: akuten-noi/pcdbdb
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+publish_mode: simple
+locale: ja
+
+collections:
+  - name: build_database
+    label: 育成論
+    files:
+      - name: builds
+        label: 育成論一覧
+        file: data/builds.json
+        format: json
+        fields:
+          - label: 育成論
+            name: builds
+            widget: pokemon-build-list
+            required: false
