@@ -1,10 +1,11 @@
 # 初回設定：下の repo を自分の「GitHubユーザー名/リポジトリ名」に変更してください。
 backend:
-  name: git-gateway
+  name: github
   repo: akuten-noi/pcdbdb
   branch: main
   base_url: https://api.netlify.com
   auth_endpoint: auth
+  site_domain: pokemon-pcdb.netlify.app
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
