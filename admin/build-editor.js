@@ -6,7 +6,7 @@
   const TYPE_JA={Normal:'ノーマル',Fire:'ほのお',Water:'みず',Grass:'くさ',Electric:'でんき',Ice:'こおり',Fighting:'かくとう',Poison:'どく',Ground:'じめん',Flying:'ひこう',Psychic:'エスパー',Bug:'むし',Rock:'いわ',Ghost:'ゴースト',Dragon:'ドラゴン',Dark:'あく',Steel:'はがね',Fairy:'フェアリー'};
   const COLORS={'ノーマル':'#92999f','ほのお':'#e76f51','みず':'#4d8fd6','でんき':'#e3b92f','くさ':'#5aa65a','こおり':'#55bfc5','かくとう':'#c45a45','どく':'#9b65b5','じめん':'#c99650','ひこう':'#7397d1','エスパー':'#d86691','むし':'#8aa63a','いわ':'#a89655','ゴースト':'#7066a8','ドラゴン':'#5b6fc4','あく':'#665c59','はがね':'#708a99','フェアリー':'#d878ad','不明':'#777'};
   const NATURES=['がんばりや（補正なし）','さみしがり（攻撃1.1倍・防御0.9倍）','ゆうかん（攻撃1.1倍・素早さ0.9倍）','いじっぱり（攻撃1.1倍・特攻0.9倍）','やんちゃ（攻撃1.1倍・特防0.9倍）','ずぶとい（防御1.1倍・攻撃0.9倍）','すなお（補正なし）','のんき（防御1.1倍・素早さ0.9倍）','わんぱく（防御1.1倍・特攻0.9倍）','のうてんき（防御1.1倍・特防0.9倍）','おくびょう（素早さ1.1倍・攻撃0.9倍）','せっかち（素早さ1.1倍・防御0.9倍）','まじめ（補正なし）','ようき（素早さ1.1倍・特攻0.9倍）','むじゃき（素早さ1.1倍・特防0.9倍）','ひかえめ（特攻1.1倍・攻撃0.9倍）','おっとり（特攻1.1倍・防御0.9倍）','れいせい（特攻1.1倍・素早さ0.9倍）','てれや（補正なし）','うっかりや（特攻1.1倍・特防0.9倍）','おだやか（特防1.1倍・攻撃0.9倍）','おとなしい（特防1.1倍・防御0.9倍）','なまいき（特防1.1倍・素早さ0.9倍）','しんちょう（特防1.1倍・特攻0.9倍）','きまぐれ（補正なし）'];
-  const EMPTY={published:true,pokemon:'',nature:'',ability:'',item:'',hp:0,attack:0,defense:0,spAttack:0,spDefense:0,speed:0,move1:'',move2:'',move3:'',move4:'',usage:'',partners:'',counters:'',gameplan:'',calcs:'',notes:''};
+  const EMPTY={published:true,pokemon:'',buildType:'',nature:'',ability:'',item:'',hp:0,attack:0,defense:0,spAttack:0,spDefense:0,speed:0,move1:'',move2:'',move3:'',move4:'',usage:'',partners:'',counters:'',gameplan:'',calcs:'',notes:''};
   const POINTS=[['hp','HP'],['attack','攻撃'],['defense','防御'],['spAttack','特攻'],['spDefense','特防'],['speed','素早さ']];
   const TEXTS=[['usage','基本的な使い方'],['partners','相性の良い味方'],['counters','苦手な相手'],['gameplan','選出・立ち回り'],['calcs','ダメージ・耐久目安'],['notes','補足']];
   const plain=v=>v&&typeof v.toJS==='function'?v.toJS():(Array.isArray(v)?v:[]);
@@ -57,6 +57,7 @@
           : h('div',{style:{padding:'10px 12px',marginBottom:'14px',background:'#fffaeb',borderRadius:'7px',color:'#93370d',fontSize:'13px'}},'既存の育成論を編集中です。別のポケモンを追加する場合は、上の「＋ 新しく育成論を作成」を使用してください。'),
         field('公開する',h('input',{type:'checkbox',checked:b.published!==false,onChange:e=>update(i,'published',e.target.checked)})),
         field('ポケモン名',pokemonField,isNew?'新しく追加するポケモンを選択します。':'上書き防止のため、既存育成論のポケモン名は変更できません。'),
+        field('型',h('input',{type:'text',value:b.buildType||'',placeholder:'例：追い風サポート型、毒撒き型',onChange:e=>update(i,'buildType',e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}}),'同じポケモンの育成論を見分けるための名前を入力します。'),
         p?h('div',{style:{margin:'-5px 0 14px'}},p.types.map(t=>{const ja=TYPE_JA[t]||t;return badge(ja,ja)})):null,
         field('性格',select(b.nature,v=>update(i,'nature',v),NATURES,'性格を選択')),
         field('特性',select(b.ability,v=>update(i,'ability',v),p?p.abilities:[],p?'特性を選択':'先にポケモンを選択',!p)),
@@ -83,7 +84,10 @@
         h('button',{type:'button',onClick:()=>setOpenKey(isOpen?null:key),style:{width:'100%',border:0,background:isOpen?'#eff8ff':'#fff',padding:'12px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',textAlign:'left',cursor:'pointer'}},[
           h('span',{style:{display:'flex',alignItems:'center',gap:'9px',minWidth:0}},[
             h('span',{style:{fontSize:'16px',color:'#475467',width:'18px'}},isOpen?'▼':'▶'),
-            h('strong',{style:{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},b.pokemon),
+            h('span',{style:{minWidth:0,overflow:'hidden'}},[
+              h('strong',{style:{display:'block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},b.pokemon),
+              b.buildType?h('span',{style:{display:'block',fontSize:'12px',color:'#667085',marginTop:'2px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},b.buildType):null
+            ]),
             b.published===false?h('span',{style:{fontSize:'11px',background:'#f2f4f7',color:'#667085',padding:'2px 7px',borderRadius:'999px'}},'非公開'):null
           ]),
           h('span',{style:{fontSize:'13px',color:'#175cd3',fontWeight:'700',flexShrink:0}},isOpen?'閉じる':'編集する')
@@ -101,7 +105,7 @@
     const existingEntries=[];
     builds.forEach((raw,i)=>(raw&&raw.pokemon?existingEntries:newEntries).push({raw,i}));
     const query=searchText.trim().toLowerCase();
-    const filteredExisting=query?existingEntries.filter(({raw})=>String(raw.pokemon||'').toLowerCase().includes(query)):existingEntries;
+    const filteredExisting=query?existingEntries.filter(({raw})=>`${raw.pokemon||''} ${raw.buildType||''}`.toLowerCase().includes(query)):existingEntries;
 
     return h('div',{},[
       h('section',{style:{border:'1px solid #84adff',borderRadius:'10px',padding:'16px',marginBottom:'22px',background:'#f5f8ff'}},[
@@ -115,7 +119,7 @@
         h('span',{style:{fontSize:'13px',color:'#667085'}},query?`${filteredExisting.length} / ${existingEntries.length}件`:`${existingEntries.length}件`)
       ]),
       existingEntries.length?h('div',{style:{marginBottom:'12px'}},[
-        h('input',{type:'search',value:searchText,placeholder:'ポケモン名で育成論を検索',onChange:e=>setSearchText(e.target.value),style:{width:'100%',padding:'11px 12px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'8px',fontSize:'14px'}})
+        h('input',{type:'search',value:searchText,placeholder:'ポケモン名・型で育成論を検索',onChange:e=>setSearchText(e.target.value),style:{width:'100%',padding:'11px 12px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'8px',fontSize:'14px'}})
       ]):null,
       filteredExisting.length
         ? h('div',{},filteredExisting.map(({raw,i})=>renderBuild(raw,i,false)))
