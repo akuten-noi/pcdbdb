@@ -1,6 +1,6 @@
 # 初回設定：下の repo を自分の「GitHubユーザー名/リポジトリ名」に変更してください。
 backend:
-  name: github
+  name: git-gateway
   repo: akuten-noi/pcdbdb
   branch: main
   base_url: https://api.netlify.com
