@@ -33,21 +33,6 @@ collections:
         fields:
           - label: 構築
             name: teams
-            widget: list
+            widget: pokemon-team-list
             required: false
-            summary: "{{fields.teamName}}"
-            fields:
-              - { label: 公開する, name: published, widget: boolean, default: true }
-              - { label: 構築名, name: teamName, widget: string }
-              - { label: ポケモン1, name: pokemon1, widget: string }
-              - { label: ポケモン2, name: pokemon2, widget: string }
-              - { label: ポケモン3, name: pokemon3, widget: string }
-              - { label: ポケモン4, name: pokemon4, widget: string }
-              - { label: ポケモン5, name: pokemon5, widget: string }
-              - { label: ポケモン6, name: pokemon6, widget: string }
-              - { label: 構築コンセプト, name: concept, widget: text, required: false }
-              - { label: 基本選出, name: leads, widget: text, required: false }
-              - { label: 動かし方, name: gameplan, widget: text, required: false }
-              - { label: 苦手な相手・注意点, name: counters, widget: text, required: false }
-              - { label: 補足, name: notes, widget: text, required: false }
 

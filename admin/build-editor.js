@@ -128,4 +128,111 @@
     }
   });
   CMS.registerWidget('pokemon-build-list',Control);
+
+  const TEAM_MEMBER_EMPTY={pokemon:'',nature:'',ability:'',item:'',hp:0,attack:0,defense:0,spAttack:0,spDefense:0,speed:0,move1:'',move2:'',move3:'',move4:''};
+  const TEAM_EMPTY={published:true,teamName:'',pokemon1:null,pokemon2:null,pokemon3:null,pokemon4:null,pokemon5:null,pokemon6:null,concept:'',leads:'',gameplan:'',counters:'',notes:''};
+  function normalizeMember(value){
+    if(typeof value==='string')return Object.assign({},TEAM_MEMBER_EMPTY,{pokemon:value});
+    return Object.assign({},TEAM_MEMBER_EMPTY,value||{});
+  }
+  function teamTextInput(value,onChange,placeholder){return h('input',{type:'text',value:value||'',placeholder:placeholder||'',onChange:e=>onChange(e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}})}
+  const TeamControl=window.createClass({
+    getInitialState:function(){return {searchText:'',openKey:null,openMember:null};},
+    render:function(){
+      const props=this.props;
+      const teams=plain(props.value);
+      const emit=next=>props.onChange(next);
+      const normalized=()=>teams.map(x=>Object.assign({},TEAM_EMPTY,x));
+      const updateTeam=(i,key,val)=>{const next=normalized();next[i][key]=val;emit(next)};
+      const updateMember=(i,slot,key,val)=>{
+        const next=normalized();
+        const member=normalizeMember(next[i][slot]);
+        member[key]=val;
+        if(key==='pokemon'){
+          member.ability='';member.item='';member.move1='';member.move2='';member.move3='';member.move4='';
+        }
+        next[i][slot]=member;
+        emit(next);
+      };
+      const remove=i=>emit(teams.filter((_,n)=>n!==i));
+      const hasBlank=teams.some(t=>!t||!t.teamName);
+      const add=()=>{if(!hasBlank)emit(teams.concat([Object.assign({},TEAM_EMPTY,{editorId:'team-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)})]));};
+      const memberName=m=>typeof m==='string'?m:(m&&m.pokemon)||'';
+
+      const renderMember=(rawMember,i,slot,n)=>{
+        const m=normalizeMember(rawMember);
+        const pkm=DATA.find(x=>x.name===m.pokemon);
+        const total=POINTS.reduce((sum,[k])=>sum+(Number(m[k])||0),0);
+        const items=allowedItems(pkm);
+        const memberKey=`${i}-${slot}`;
+        const isOpen=this.state.openMember===memberKey;
+        return h('section',{key:slot,style:{border:isOpen?'2px solid #1570ef':'1px solid #d0d5dd',borderRadius:'8px',overflow:'hidden',background:'#fff'}},[
+          h('button',{type:'button',onClick:()=>this.setState({openMember:isOpen?null:memberKey}),style:{width:'100%',border:0,padding:'11px 12px',background:isOpen?'#eff8ff':'#f9fafb',display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',textAlign:'left'}},[
+            h('strong',{},`${n}匹目：${m.pokemon||'未選択'}`),
+            h('span',{style:{fontSize:'12px',color:'#175cd3',fontWeight:'700'}},isOpen?'閉じる':'設定する')
+          ]),
+          isOpen?h('div',{style:{padding:'14px',borderTop:'1px solid #d0d5dd'}},[
+            field('ポケモン名',select(m.pokemon,v=>updateMember(i,slot,'pokemon',v),DATA.map(x=>x.name),'一覧から選択')),
+            pkm?h('div',{style:{margin:'-5px 0 14px'}},pkm.types.map(t=>{const ja=TYPE_JA[t]||t;return badge(ja,ja)})):null,
+            field('性格',select(m.nature,v=>updateMember(i,slot,'nature',v),NATURES,'性格を選択')),
+            field('特性',select(m.ability,v=>updateMember(i,slot,'ability',v),pkm?pkm.abilities:[],pkm?'特性を選択':'先にポケモンを選択',!pkm)),
+            field('持ち物',select(m.item,v=>updateMember(i,slot,'item',v),items,pkm?(pkm.isMega?'対応するメガストーン固定':'持ち物を選択'):'先にポケモンを選択',!pkm)),
+            h('div',{style:{fontWeight:'700',margin:'12px 0 8px'}},['能力ポイント ',h('span',{style:{color:total>66?'#b42318':'#344054'}},`合計 ${total} / 66`)]),
+            h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))',gap:'9px',marginBottom:'14px'}},POINTS.map(([k,label])=>{const other=total-(Number(m[k])||0);const max=Math.max(0,Math.min(32,66-other));return field(label,numberInput(m[k],v=>updateMember(i,slot,k,v),max),`0〜32（上限 ${max}）`)})),
+            h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:'9px'}},[1,2,3,4].map(moveNo=>{
+              const key='move'+moveNo;
+              const moves=pkm?pkm.moves:[];
+              return field(`技${moveNo}`,select(m[key],v=>updateMember(i,slot,key,v),moves.map(move=>({value:move.name,label:`${move.name}（${move.type}）`})),pkm?'技を選択':'先にポケモンを選択',!pkm));
+            }))
+          ]):null
+        ]);
+      };
+
+      const renderTeam=(raw,i,isNew)=>{
+        const t=Object.assign({},TEAM_EMPTY,raw);
+        const key=t.editorId||`team-${i}-${t.teamName}`;
+        const isOpen=isNew||this.state.openKey===key;
+        const names=[1,2,3,4,5,6].map(n=>memberName(t['pokemon'+n])).filter(Boolean);
+        const form=h('div',{},[
+          field('公開する',h('input',{type:'checkbox',checked:t.published!==false,onChange:e=>updateTeam(i,'published',e.target.checked)})),
+          field('構築名',teamTextInput(t.teamName,v=>updateTeam(i,'teamName',v),'例：雨＋追い風スタンダード')),
+          h('div',{style:{fontWeight:'800',margin:'18px 0 9px'}},'構築ポケモン（6匹）'),
+          h('div',{style:{display:'grid',gap:'9px',marginBottom:'16px'}},[1,2,3,4,5,6].map(n=>renderMember(t['pokemon'+n],i,'pokemon'+n,n))),
+          field('構築コンセプト',h('textarea',{value:t.concept||'',rows:4,onChange:e=>updateTeam(i,'concept',e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}})),
+          field('基本選出',h('textarea',{value:t.leads||'',rows:4,onChange:e=>updateTeam(i,'leads',e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}})),
+          field('動かし方',h('textarea',{value:t.gameplan||'',rows:4,onChange:e=>updateTeam(i,'gameplan',e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}})),
+          field('苦手な相手・注意点',h('textarea',{value:t.counters||'',rows:4,onChange:e=>updateTeam(i,'counters',e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}})),
+          field('補足',h('textarea',{value:t.notes||'',rows:4,onChange:e=>updateTeam(i,'notes',e.target.value),style:{width:'100%',padding:'10px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'6px'}}))
+        ]);
+        if(isNew)return h('section',{key,style:{border:'2px solid #1570ef',borderRadius:'10px',padding:'16px',marginBottom:'18px',background:'#fff'}},[
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'14px'}},[h('strong',{},'新しい構築を作成'),h('button',{type:'button',onClick:()=>remove(i),style:{border:0,background:'#b42318',color:'#fff',padding:'7px 12px',borderRadius:'6px'}},'作成を取り消す')]),form
+        ]);
+        return h('section',{key,style:{border:isOpen?'2px solid #1570ef':'1px solid #d0d5dd',borderRadius:'9px',marginBottom:'8px',background:'#fff',overflow:'hidden'}},[
+          h('button',{type:'button',onClick:()=>this.setState({openKey:isOpen?null:key,openMember:null}),style:{width:'100%',border:0,background:isOpen?'#eff8ff':'#fff',padding:'12px 14px',display:'flex',justifyContent:'space-between',alignItems:'center',textAlign:'left',cursor:'pointer'}},[
+            h('span',{},[h('strong',{style:{display:'block'}},t.teamName||'名称未設定の構築'),h('span',{style:{display:'block',fontSize:'12px',color:'#667085',marginTop:'2px'}},names.join(' / ')||'ポケモン未登録')]),
+            h('span',{style:{fontSize:'13px',color:'#175cd3',fontWeight:'700'}},isOpen?'閉じる':'編集する')
+          ]),
+          isOpen?h('div',{style:{padding:'16px',borderTop:'1px solid #d0d5dd'}},[h('div',{style:{display:'flex',justifyContent:'flex-end',marginBottom:'12px'}},h('button',{type:'button',onClick:()=>remove(i),style:{border:0,background:'#b42318',color:'#fff',padding:'7px 12px',borderRadius:'6px'}},'この構築を削除')),form]):null
+        ]);
+      };
+
+      const newEntries=[],existingEntries=[];
+      teams.forEach((raw,i)=>(raw&&raw.teamName?existingEntries:newEntries).push({raw,i}));
+      const query=this.state.searchText.trim().toLowerCase();
+      const filtered=query?existingEntries.filter(({raw})=>{const t=Object.assign({},TEAM_EMPTY,raw);return (`${t.teamName} `+[1,2,3,4,5,6].map(n=>memberName(t['pokemon'+n])).join(' ')).toLowerCase().includes(query)}):existingEntries;
+      return h('div',{},[
+        h('section',{style:{border:'1px solid #84adff',borderRadius:'10px',padding:'16px',marginBottom:'22px',background:'#f5f8ff'}},[
+          h('h2',{style:{fontSize:'18px',margin:'0 0 8px'}},'新しく構築を作成'),
+          h('p',{style:{margin:'0 0 12px',color:'#475467',fontSize:'14px'}},'6匹それぞれの性格・特性・持ち物・能力ポイント・技を選択して登録します。'),
+          h('button',{type:'button',onClick:add,disabled:hasBlank,style:{width:'100%',padding:'12px',border:'1px solid #1570ef',background:hasBlank?'#e4e7ec':'#eff8ff',color:hasBlank?'#667085':'#175cd3',fontWeight:'700',borderRadius:'8px'}},hasBlank?'新規作成フォームを入力してください':'＋ 新しく構築を作成')
+        ]),
+        newEntries.length?h('div',{},newEntries.map(({raw,i})=>renderTeam(raw,i,true))):null,
+        h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',margin:'24px 0 12px'}},[h('h2',{style:{fontSize:'18px',margin:0}},'作成済みの構築一覧'),h('span',{style:{fontSize:'13px',color:'#667085'}},`${filtered.length} / ${existingEntries.length}件`)]),
+        existingEntries.length?h('input',{type:'search',value:this.state.searchText,placeholder:'構築名・ポケモン名で検索',onChange:e=>this.setState({searchText:e.target.value}),style:{width:'100%',padding:'11px 12px',boxSizing:'border-box',border:'1px solid #b9c1c8',borderRadius:'8px',fontSize:'14px',marginBottom:'12px'}}):null,
+        filtered.length?h('div',{},filtered.map(({raw,i})=>renderTeam(raw,i,false))):h('div',{style:{padding:'20px',textAlign:'center',border:'1px dashed #98a2b3',borderRadius:'8px',color:'#667085'}},existingEntries.length?'検索条件に一致する構築はありません。':'作成済みの構築はありません。')
+      ]);
+    }
+  });
+  CMS.registerWidget('pokemon-team-list',TeamControl);
+
 })();
