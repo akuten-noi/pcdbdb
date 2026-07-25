@@ -5,7 +5,7 @@ backend:
   branch: main
   base_url: https://api.netlify.com
   auth_endpoint: auth
-  site_domain: pokemon-pcdb.netlify.app
+  site_domain: pcdbdb.netlify.app
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
