@@ -6,9 +6,9 @@
   const TYPE_JA={Normal:'ノーマル',Fire:'ほのお',Water:'みず',Grass:'くさ',Electric:'でんき',Ice:'こおり',Fighting:'かくとう',Poison:'どく',Ground:'じめん',Flying:'ひこう',Psychic:'エスパー',Bug:'むし',Rock:'いわ',Ghost:'ゴースト',Dragon:'ドラゴン',Dark:'あく',Steel:'はがね',Fairy:'フェアリー'};
   const COLORS={'ノーマル':'#92999f','ほのお':'#e76f51','みず':'#4d8fd6','でんき':'#e3b92f','くさ':'#5aa65a','こおり':'#55bfc5','かくとう':'#c45a45','どく':'#9b65b5','じめん':'#c99650','ひこう':'#7397d1','エスパー':'#d86691','むし':'#8aa63a','いわ':'#a89655','ゴースト':'#7066a8','ドラゴン':'#5b6fc4','あく':'#665c59','はがね':'#708a99','フェアリー':'#d878ad','不明':'#777'};
   const NATURES=['がんばりや（補正なし）','さみしがり（攻撃1.1倍・防御0.9倍）','ゆうかん（攻撃1.1倍・素早さ0.9倍）','いじっぱり（攻撃1.1倍・特攻0.9倍）','やんちゃ（攻撃1.1倍・特防0.9倍）','ずぶとい（防御1.1倍・攻撃0.9倍）','すなお（補正なし）','のんき（防御1.1倍・素早さ0.9倍）','わんぱく（防御1.1倍・特攻0.9倍）','のうてんき（防御1.1倍・特防0.9倍）','おくびょう（素早さ1.1倍・攻撃0.9倍）','せっかち（素早さ1.1倍・防御0.9倍）','まじめ（補正なし）','ようき（素早さ1.1倍・特攻0.9倍）','むじゃき（素早さ1.1倍・特防0.9倍）','ひかえめ（特攻1.1倍・攻撃0.9倍）','おっとり（特攻1.1倍・防御0.9倍）','れいせい（特攻1.1倍・素早さ0.9倍）','てれや（補正なし）','うっかりや（特攻1.1倍・特防0.9倍）','おだやか（特防1.1倍・攻撃0.9倍）','おとなしい（特防1.1倍・防御0.9倍）','なまいき（特防1.1倍・素早さ0.9倍）','しんちょう（特防1.1倍・特攻0.9倍）','きまぐれ（補正なし）'];
-  const EMPTY={published:true,pokemon:'',buildType:'',nature:'',ability:'',item:'',hp:0,attack:0,defense:0,spAttack:0,spDefense:0,speed:0,move1:'',move2:'',move3:'',move4:'',usage:'',partners:'',counters:'',gameplan:'',calcs:'',notes:''};
+  const EMPTY={published:true,pokemon:'',buildType:'',nature:'',ability:'',item:'',hp:0,attack:0,defense:0,spAttack:0,spDefense:0,speed:0,move1:'',move2:'',move3:'',move4:'',usage:'',partners:'',goodAgainst:'',counters:'',gameplan:'',calcs:'',notes:''};
   const POINTS=[['hp','HP'],['attack','攻撃'],['defense','防御'],['spAttack','特攻'],['spDefense','特防'],['speed','素早さ']];
-  const TEXTS=[['usage','基本的な使い方'],['partners','相性の良い味方'],['counters','苦手な相手'],['gameplan','選出・立ち回り'],['calcs','ダメージ・耐久目安'],['notes','補足']];
+  const TEXTS=[['usage','基本的な使い方'],['partners','相性の良い味方'],['goodAgainst','得意な相手'],['counters','苦手な相手'],['gameplan','選出・立ち回り'],['calcs','ダメージ・耐久目安'],['notes','対策']];
   const plain=v=>v&&typeof v.toJS==='function'?v.toJS():(Array.isArray(v)?v:[]);
   const opt=x=>typeof x==='string'?{value:x,label:x}:x;
   function badge(text,type){return h('span',{style:{display:'inline-block',background:COLORS[type]||'#777',color:'#fff',padding:'3px 9px',borderRadius:'999px',fontSize:'12px',fontWeight:'700',marginRight:'5px'}},text)}
