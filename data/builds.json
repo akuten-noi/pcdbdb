@@ -3,7 +3,7 @@
     {
       "published": true,
       "pokemon": "フシギバナ",
-      "buildType": "型",
+      "buildType": "型説明",
       "nature": "さみしがり（攻撃1.1倍・防御0.9倍）",
       "ability": "ようりょくそ",
       "item": "いのちのたま",
@@ -24,6 +24,31 @@
       "calcs": "ダメージ・耐久目安説明",
       "notes": "補足説明",
       "editorId": "build-1785044828589-it1uq8"
+    },
+    {
+      "published": true,
+      "pokemon": "メガフシギバナ",
+      "buildType": "型説明",
+      "nature": "",
+      "ability": "",
+      "item": "",
+      "hp": 0,
+      "attack": 0,
+      "defense": 0,
+      "spAttack": 0,
+      "spDefense": 0,
+      "speed": 0,
+      "move1": "",
+      "move2": "",
+      "move3": "",
+      "move4": "",
+      "usage": "",
+      "partners": "",
+      "counters": "",
+      "gameplan": "",
+      "calcs": "",
+      "notes": "",
+      "editorId": "build-1785044991570-sp00yz"
     }
   ]
 }
