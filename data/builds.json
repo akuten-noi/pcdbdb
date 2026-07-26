@@ -1,3 +1,29 @@
 {
-  "builds": []
+  "builds": [
+    {
+      "published": true,
+      "pokemon": "フシギバナ",
+      "buildType": "型",
+      "nature": "さみしがり（攻撃1.1倍・防御0.9倍）",
+      "ability": "ようりょくそ",
+      "item": "いのちのたま",
+      "hp": 10,
+      "attack": 11,
+      "defense": 12,
+      "spAttack": 13,
+      "spDefense": 14,
+      "speed": 6,
+      "move1": "だいちのはどう",
+      "move2": "ヘドロばくだん",
+      "move3": "グラススライダー",
+      "move4": "のろい",
+      "usage": "基本的な使い方説明",
+      "partners": "相性の良い味方説明",
+      "counters": "苦手な相手説明",
+      "gameplan": "選出・立ち回り説明",
+      "calcs": "ダメージ・耐久目安説明",
+      "notes": "補足説明",
+      "editorId": "build-1785044828589-it1uq8"
+    }
+  ]
 }
