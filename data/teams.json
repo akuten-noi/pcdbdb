@@ -1,3 +1,50 @@
 {
-  "teams": []
+  "teams": [
+    {
+      "published": true,
+      "teamName": "",
+      "pokemon1": {
+        "pokemon": "エルフーン",
+        "nature": "おくびょう（素早さ1.1倍・攻撃0.9倍）",
+        "ability": "いたずらごころ",
+        "item": "きあいのタスキ",
+        "hp": 2,
+        "attack": 0,
+        "defense": 0,
+        "spAttack": 32,
+        "spDefense": 0,
+        "speed": 32,
+        "move1": "おいかぜ",
+        "move2": "ムーンフォース",
+        "move3": "まもる",
+        "move4": "アンコール"
+      },
+      "pokemon2": {
+        "pokemon": "メガリザードン Y",
+        "nature": "ひかえめ（特攻1.1倍・攻撃0.9倍）",
+        "ability": "ひでり",
+        "item": "リザードナイトY",
+        "hp": 2,
+        "attack": 0,
+        "defense": 0,
+        "spAttack": 32,
+        "spDefense": 0,
+        "speed": 32,
+        "move1": "まもる",
+        "move2": "ねっぷう",
+        "move3": "ウェザーボール",
+        "move4": "ソーラービーム"
+      },
+      "pokemon3": null,
+      "pokemon4": null,
+      "pokemon5": null,
+      "pokemon6": null,
+      "concept": "",
+      "leads": "",
+      "gameplan": "",
+      "counters": "",
+      "notes": "",
+      "editorId": "team-1785045197817-4qdyji"
+    }
+  ]
 }
